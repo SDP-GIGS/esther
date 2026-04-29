@@ -34,7 +34,7 @@ class SupervisorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Supervisor
-        fields = '__all__'
+        fields = ['user', 'department']
 
 class ReportSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='student.user.get_full_name', read_only=True)
