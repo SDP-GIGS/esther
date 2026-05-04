@@ -63,7 +63,7 @@ color: rgb(255, 255, 255);
     font-size: 1.2rem;
     font-weight: 400;
 }
-.login-box input{
+.login-box input:not([type="checkbox"]){
     width: 100%;
     padding: 10px;
     border-radius: 4px;
@@ -114,3 +114,4 @@ text-decoration: none;
     font-size: 1rem;
     color: #ffffff;
 }
+
