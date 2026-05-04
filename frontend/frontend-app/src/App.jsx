@@ -1,8 +1,11 @@
 import "./App.css";
-import DashboardButton from "./components/DashboardButton";
 import DashboardLayout from "./components/DashboardLayout";
 import React, { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
+import { Routes, Route } from "react-router-dom";
+import CreateAccount from "./CreateAccount";
+import ForgotPassword from "./ForgotPassword";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   const [role, setRole] = useState(null);
@@ -11,9 +14,7 @@ function App() {
   useEffect(() => {
     fetch("/api/user")
       .then(res => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch user data");
-        }
+        if (!res.ok) throw new Error("Failed to fetch user data");
         return res.json();
       })
       .then(data => {
@@ -31,69 +32,20 @@ function App() {
   }
 
   return (
-    <div>
-      <Navbar />
-      {role ? (
-        <DashboardLayout role={role} />
-      ) : (
-        <div className="login-page">
-          <div className="welcome-text">
-            <h1>Welcome to</h1>
-            <h1>ILES</h1>
-          </div>
-          <div className="login-box">
-            <h2>Login</h2>
-            <form>
-              <label>Email:</label>
-              <input type="email" placeholder="Email:" required />
-              <label>Password:</label>
-              <input type="password" placeholder="Password:" required />
-
-              <div className="login-buttons">
-                <button type="button" onClick={() => setRole("student")}>
-                  Login as Student
-                </button>
-                <button type="button" onClick={() => setRole("supervisor")}>
-                  Login as Supervisor
-                </button>
-                <button type="button" onClick={() => setRole("admin")}>
-                  Login as Admin
-                </button>
-              </div>
-
-              <div className="extra-links">
-                <a href="#">Forgot Password?</a>
-                <p>
-                  Don't have an account? <a href="#">Signup</a>
-                </p>
-              </div>
-            </form>
-
-            <div className="contact-info">
-              <p>Need help? Contact us</p>
-              <p>
-                Email:{" "}
-                <a href="mailto:support.ILES@gmail.com">
-                  Support.ILES@gmail.com
-                </a>
-              </p>
-              <p>
-                Phone:{" "}
-                <span
-                  className="phone"
-                  onClick={() => {
-                    navigator.clipboard.writeText("+256776083497");
-                    alert("Phone number copied!");
-                  }}
-                >
-                  +256 776 083497
-                </span>
-              </p>
-            </div>
-          </div>
+    <Routes>
+      <Route path="/" element={
+        <div>
+          <Navbar />
+          {role ? (
+            <DashboardLayout role={role} />
+          ) : (
+            <LoginPage />
+          )}
         </div>
-      )}
-    </div>
+      } />
+      <Route path="/create-account" element={<CreateAccount />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+    </Routes>
   );
 }
 

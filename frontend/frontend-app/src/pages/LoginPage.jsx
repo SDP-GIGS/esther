@@ -1,10 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = (role) => {
-    // Redirect to dashboard with role info
     navigate(`/dashboard?role=${role}`);
   };
 
@@ -17,7 +16,7 @@ function LoginPage() {
 
       <div className="login-box">
         <h2>Login</h2>
-        <form>
+        <form onSubmit={(e) => e.preventDefault()}>
           <label>Email:</label>
           <input type="email" placeholder="Email:" required />
           <label>Password:</label>
@@ -36,15 +35,9 @@ function LoginPage() {
           </div>
 
           <div className="extra-links">
-            <a href="#">Forgot Password?</a>
+            <Link to="/forgot-password">Forgot Password?</Link>
             <p>
-              Don’t have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/create-account")}
-              >
-                Signup
-              </button>
+              Don't have an account? <Link to="/create-account">Signup</Link>
             </p>
           </div>
         </form>
@@ -52,8 +45,7 @@ function LoginPage() {
         <div className="contact-info">
           <p>Need help? Contact us</p>
           <p>
-            Email:{" "}
-            <a href="mailto:support.ILES@gmail.com">Support.ILES@gmail.com</a>
+            Email: <a href="mailto:support.ILES@gmail.com">Support.ILES@gmail.com</a>
           </p>
           <p>
             Phone:{" "}

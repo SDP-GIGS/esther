@@ -72,7 +72,7 @@ color: rgb(255, 255, 255);
     border-radius: 4px;
 }
 
-.login-buttons button{
+.login-buttons button {
     background-color: rgb(14, 25, 107);
     width: 33.3%;
     margin: 6px 0;
@@ -80,10 +80,18 @@ color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     border-radius: 4px;
     cursor: pointer;
+    height: 45px;         
+    display: inline-flex;  
+    align-items: center;   
+    justify-content: center;
 }
 
 .login-buttons button:hover{
     background: #000000;
+}
+.login-buttons {
+    display: flex;
+    gap: 8px;
 }
 
 .extra-links {
