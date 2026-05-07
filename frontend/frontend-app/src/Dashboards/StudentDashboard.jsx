@@ -1,19 +1,20 @@
 import { useState } from "react";
-
-const token = localStorage.getItem("token");
-const name = localStorage.getItem("name");
-
-const api = (url, options = {}) =>
-  fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  });
+import { useUser } from "../context/UserContext";
 
 export default function StudentDashboard() {
+  const { user } = useUser();
+  const { name, token } = user;
+
+  const api = (url, options = {}) =>
+    fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        ...options.headers,
+      },
+    });
+
   const [activeTab, setActiveTab] = useState("overview");
   const [checkStatus, setCheckStatus] = useState(null);
   const [checkTime, setCheckTime] = useState(null);
@@ -98,11 +99,11 @@ export default function StudentDashboard() {
 
   const tabs = [
     { id: "overview", label: "Overview" },
-    { id: "checkin", label: "Check In/Out" },
-    { id: "log", label: "Daily Log" },
-    { id: "report", label: "Weekly Report" },
-    { id: "goals", label: "Goals" },
-    { id: "proof", label: "Proof of Work" },
+    { id: "checkin",  label: "Check In/Out" },
+    { id: "log",      label: "Daily Log" },
+    { id: "report",   label: "Weekly Report" },
+    { id: "goals",    label: "Goals" },
+    { id: "proof",    label: "Proof of Work" },
   ];
 
   const s = styles;
@@ -112,7 +113,7 @@ export default function StudentDashboard() {
       <div style={s.header}>
         <div>
           <h1 style={s.title}>Student Dashboard</h1>
-          <p style={s.subtitle}>Welcome back, {name || "Student"}</p>
+          <p style={s.subtitle}>Welcome back, {name}</p>
         </div>
         <div style={s.dateBadge}>{new Date().toDateString()}</div>
       </div>
@@ -134,11 +135,11 @@ export default function StudentDashboard() {
         {activeTab === "overview" && (
           <div style={s.grid}>
             {[
-              { label: "Attendance", value: "Check your daily attendance", action: () => setActiveTab("checkin") },
-              { label: "Daily Log", value: "Document today's tasks", action: () => setActiveTab("log") },
-              { label: "Weekly Report", value: "Submit report to supervisor", action: () => setActiveTab("report") },
-              { label: "Goals", value: "View & respond to goals", action: () => setActiveTab("goals") },
-              { label: "Proof of Work", value: "Upload & send to email", action: () => setActiveTab("proof") },
+              { label: "Attendance",     value: "Check your daily attendance",    action: () => setActiveTab("checkin") },
+              { label: "Daily Log",      value: "Document today's tasks",          action: () => setActiveTab("log") },
+              { label: "Weekly Report",  value: "Submit report to supervisor",     action: () => setActiveTab("report") },
+              { label: "Goals",          value: "View & respond to goals",         action: () => setActiveTab("goals") },
+              { label: "Proof of Work",  value: "Upload & send to email",          action: () => setActiveTab("proof") },
             ].map((card) => (
               <div key={card.label} style={s.card} onClick={card.action}>
                 <h3 style={s.cardTitle}>{card.label}</h3>
@@ -273,41 +274,25 @@ const styles = {
     color: "white",
   },
   header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "24px",
-    flexWrap: "wrap",
-    gap: "12px",
+    display: "flex", justifyContent: "space-between",
+    alignItems: "center", marginBottom: "24px",
+    flexWrap: "wrap", gap: "12px",
   },
-  title: { fontSize: "2rem", margin: 0, color: "white" },
+  title:    { fontSize: "2rem", margin: 0, color: "white" },
   subtitle: { color: "#aaa", margin: "4px 0 0" },
   dateBadge: {
     background: "rgba(255,255,255,0.1)",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    fontSize: "0.9rem",
+    padding: "8px 16px", borderRadius: "20px", fontSize: "0.9rem",
   },
-  tabs: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-    marginBottom: "24px",
-  },
+  tabs: { display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "24px" },
   tab: {
-    padding: "10px 18px",
-    borderRadius: "8px",
+    padding: "10px 18px", borderRadius: "8px",
     border: "1px solid rgba(255,255,255,0.2)",
-    background: "transparent",
-    color: "white",
-    cursor: "pointer",
-    fontSize: "0.9rem",
+    background: "transparent", color: "white",
+    cursor: "pointer", fontSize: "0.9rem",
   },
-  activeTab: {
-    background: "rgb(14, 25, 107)",
-    borderColor: "rgb(14, 25, 107)",
-  },
-  content: { maxWidth: "800px" },
+  activeTab: { background: "rgb(14, 25, 107)", borderColor: "rgb(14, 25, 107)" },
+  content:  { maxWidth: "800px" },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
@@ -316,63 +301,44 @@ const styles = {
   card: {
     background: "rgba(255,255,255,0.07)",
     border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: "12px",
-    padding: "20px",
-    cursor: "pointer",
+    borderRadius: "12px", padding: "20px", cursor: "pointer",
     transition: "background 0.2s",
   },
-  cardTitle: { margin: "0 0 8px", fontSize: "1rem", color: "white" },
-  cardText: { color: "#aaa", fontSize: "0.85rem", margin: 0 },
-  cardArrow: { display: "block", marginTop: "12px", color: "#6b8cff" },
-  section: { display: "flex", flexDirection: "column", gap: "12px" },
+  cardTitle:  { margin: "0 0 8px", fontSize: "1rem", color: "white" },
+  cardText:   { color: "#aaa", fontSize: "0.85rem", margin: 0 },
+  cardArrow:  { display: "block", marginTop: "12px", color: "#6b8cff" },
+  section:    { display: "flex", flexDirection: "column", gap: "12px" },
   sectionTitle: { margin: "0 0 8px", fontSize: "1.4rem" },
-  label: { color: "#ccc", fontSize: "0.9rem" },
+  label:      { color: "#ccc", fontSize: "0.9rem" },
   input: {
-    padding: "10px",
-    borderRadius: "6px",
+    padding: "10px", borderRadius: "6px",
     border: "1px solid rgba(255,255,255,0.2)",
     background: "rgba(255,255,255,0.1)",
-    color: "white",
-    fontSize: "1rem",
-    width: "200px",
+    color: "white", fontSize: "1rem", width: "200px",
   },
   textarea: {
-    padding: "12px",
-    borderRadius: "6px",
+    padding: "12px", borderRadius: "6px",
     border: "1px solid rgba(255,255,255,0.2)",
     background: "rgba(255,255,255,0.1)",
-    color: "white",
-    fontSize: "1rem",
-    height: "120px",
-    resize: "vertical",
-    fontFamily: "inherit",
+    color: "white", fontSize: "1rem",
+    height: "120px", resize: "vertical", fontFamily: "inherit",
   },
   btn: {
-    padding: "12px 24px",
-    background: "rgb(14, 25, 107)",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "1rem",
-    alignSelf: "flex-start",
+    padding: "12px 24px", background: "rgb(14, 25, 107)",
+    color: "white", border: "none", borderRadius: "8px",
+    cursor: "pointer", fontSize: "1rem", alignSelf: "flex-start",
   },
   btnGreen: { background: "#166534" },
-  btnRed: { background: "#7f1d1d" },
-  row: { display: "flex", gap: "12px" },
+  btnRed:   { background: "#7f1d1d" },
+  row:      { display: "flex", gap: "12px" },
   successBox: {
-    background: "rgba(22,101,52,0.3)",
-    border: "1px solid #166534",
-    borderRadius: "8px",
-    padding: "12px",
-    color: "#86efac",
+    background: "rgba(22,101,52,0.3)", border: "1px solid #166534",
+    borderRadius: "8px", padding: "12px", color: "#86efac",
   },
   goalBox: {
     background: "rgba(255,255,255,0.05)",
     border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: "8px",
-    padding: "16px",
-    minHeight: "80px",
+    borderRadius: "8px", padding: "16px", minHeight: "80px",
   },
   fileInput: { color: "white" },
 };
