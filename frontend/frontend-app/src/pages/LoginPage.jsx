@@ -1,329 +1,440 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { api } from "../api";
 
 function LoginPage() {
+
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [errors, setErrors] = useState({});
+
+  const [loadingRole, setLoadingRole] = useState(null);
+
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Load remembered credentials
   useEffect(() => {
-  const savedEmail = localStorage.getItem("savedEmail");
-  const savedPassword = localStorage.getItem("savedPassword");
-  if (savedEmail) {
-    setEmail(savedEmail);
-    setRememberMe(true);
-  }
-  if (savedPassword) setPassword(savedPassword);
-}, []);
 
-  const registeredAccounts = [
-  { email: "student@iles.com", password: "student123", role: "student", name: "Test Student" },
-  { email: "supervisor@iles.com", password: "super123", role: "supervisor", name: "Test Supervisor" },
-  { email: "admin@iles.com", password: "admin123", role: "admin", name: "Test Admin" },
-];
+    const savedEmail = localStorage.getItem("savedEmail");
+    const savedPassword = localStorage.getItem("savedPassword");
 
-  const handleLogin = (role) => {
-  const newErrors = {};
-  if (!email.trim()) newErrors.email = "Email is required";
-  if (!password.trim()) newErrors.password = "Password is required";
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
 
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-  }
+    if (savedPassword) {
+      setPassword(savedPassword);
+    }
 
-  // Check if account exists
-  const account = registeredAccounts.find(
-    (acc) => acc.email === email && acc.role === role
-  );
-  
+  }, []);
 
-  if (!account) {
-    setErrors({ general: `No ${role} account found with that email` });
-    return;
-  }
-
-  if (account.password !== password) {
-    setErrors({ password: "Incorrect password" });
-    return;
-  }
-
-  if (rememberMe) {
-  localStorage.setItem("role", account.role);
-  localStorage.setItem("name", account.name);
-  localStorage.setItem("savedEmail", email);
-  localStorage.setItem("savedPassword", password);
-} else {
-  sessionStorage.setItem("role", account.role);
-  sessionStorage.setItem("name", account.name);
-  localStorage.removeItem("savedEmail");
-  localStorage.removeItem("savedPassword");
-}
-  setErrors({});
-  navigate(`/dashboard`);
-};
-
-  return (
-    <div className="login-page">
-      <div className="welcome-text">
-        <h1>Welcome to</h1>
-        <h1>ILES</h1>
-      </div>
-
-      <div className="login-box">
-        <h2>Login</h2>
-
-        {errors.general && (
-          <p style={{ color: "red", marginBottom: "10px", textAlign: "center" }}>
-            {errors.general}
-          </p>
-        )}
-
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label>Email:</label>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setErrors((prev) => ({ ...prev, email: "", general: "" }));
-            }}
-            style={{ border: errors.email ? "1px solid red" : "1px solid #ccc" }}
-          />
-          {errors.email && (
-            <p style={{ color: "red", fontSize: "0.85rem", margin: "4px 0" }}>
-              {errors.email}
-            </p>
-          )}
-
-          <label>Password:</label>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setErrors((prev) => ({ ...prev, password: "", general: "" }));
-            }}
-            style={{ border: errors.password ? "1px solid red" : "1px solid #ccc" }}
-          />
-          {errors.password && (
-            <p style={{ color: "red", fontSize: "0.85rem", margin: "4px 0" }}>
-              {errors.password}
-            </p>
-          )}
-
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
-            <input
-              type="checkbox"
-              id="rememberMe"
-              checked={rememberMe}
-             onChange={(e) => setRememberMe(e.target.checked)}
-  />
-  <span style={{ color: "white", fontSize: "0.95rem", cursor: "pointer" }}
-    onClick={() => setRememberMe(!rememberMe)}
-  >
-    Remember me
-  </span>
-  </div>
-
-          <div className="login-buttons">
-            <button type="button" onClick={() => handleLogin("student")}>
-              Login as Student
-            </button>
-            <button type="button" onClick={() => handleLogin("supervisor")}>
-              Login as Supervisor
-            </button>
-            <button type="button" onClick={() => handleLogin("admin")}>
-              Login as Admin
-            </button>
-          </div>
-
-          <div className="extra-links">
-            <Link to="/forgot-password">Forgot Password?</Link>
-            <p>
-              Don't have an account? <Link to="/create-account">Signup</Link>
-            </p>
-          </div>
-        </form>
-
-        <div className="contact-info">
-          <p>Need help? Contact us</p>
-          <p>
-            Email:{" "}
-            <a href="mailto:support.ILES@gmail.com">Support.ILES@gmail.com</a>
-          </p>
-          <p>
-            Phone:{" "}
-            <span
-              className="phone"
-              onClick={() => {
-                navigator.clipboard.writeText("+256776083497");
-                alert("Phone number copied!");
-              }}
-            >
-              +256 776 083497
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default LoginPage;
-
-
-
-
-
-
-{/**
-  this is after we have linked backend
-  import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
-
-function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-
+  // LOGIN FUNCTION
   const handleLogin = async (role) => {
+
     const newErrors = {};
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!password.trim()) newErrors.password = "Password is required";
+
+    // Validation
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    setLoading(true);
+    setLoadingRole(role);
+
     try {
-      const response = await fetch("/api/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
-      });
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/login/",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            role: role,
+        }),
+        }
+      );
 
       const data = await response.json();
 
+      console.log("Login response:", data);
+
       if (!response.ok) {
-        setErrors({ general: data.error });
+
+        setErrors({
+          general:
+            data.detail ||
+            "Invalid login credentials",
+        });
+
         return;
       }
 
-      // Save token and role to localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("name", data.name);
+      // Save login data
+      localStorage.setItem(
+      "user",
+      JSON.stringify({
+      name: data.user?.first_name || data.user?.email,
+      email: data.user?.email,
+      role: data.user?.role
+    })
+  );
 
-      navigate(`/dashboard?role=${data.role}`);
-    } catch (err) {
-      setErrors({ general: "Something went wrong. Please try again." });
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      // Save selected role
+      localStorage.setItem("role", role);
+
+      localStorage.setItem("name", email);
+
+      // Remember Me
+      if (rememberMe) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("savedPassword", password);
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedPassword");
+      }
+
+      // Redirect
+      navigate("/dashboard");
+
+    } catch (error) {
+
+      console.error("Login error:", error);
+
+      setErrors({
+        general:
+          "Something went wrong. Please try again later.",
+      });
+
     } finally {
-      setLoading(false);
+
+      setLoadingRole(null);
+
     }
   };
 
   return (
+
     <div className="login-page">
+
       <div className="welcome-text">
         <h1>Welcome to</h1>
         <h1>ILES</h1>
       </div>
 
       <div className="login-box">
+
         <h2>Login</h2>
 
         {errors.general && (
-          <p style={{ color: "red", marginBottom: "10px", textAlign: "center" }}>
+          <p
+            style={{
+              color: "red",
+              marginBottom: "10px",
+              textAlign: "center",
+            }}
+          >
             {errors.general}
           </p>
         )}
 
         <form onSubmit={(e) => e.preventDefault()}>
+
+          {/* EMAIL */}
+
           <label>Email:</label>
+
           <input
             type="email"
             placeholder="Email"
             value={email}
+
             onChange={(e) => {
+
               setEmail(e.target.value);
-              setErrors((prev) => ({ ...prev, email: "", general: "" }));
+
+              setErrors((prev) => ({
+                ...prev,
+                email: "",
+                general: "",
+              }));
             }}
-            style={{ border: errors.email ? "1px solid red" : "1px solid #ccc" }}
+
+            style={{
+              border:
+                errors.email
+                  ? "1px solid red"
+                  : "1px solid #ccc",
+            }}
           />
+
           {errors.email && (
-            <p style={{ color: "red", fontSize: "0.85rem", margin: "4px 0" }}>
+            <p
+              style={{
+                color: "red",
+                fontSize: "0.85rem",
+                margin: "4px 0",
+              }}
+            >
               {errors.email}
             </p>
           )}
 
+          {/* PASSWORD */}
+
           <label>Password:</label>
+
           <input
             type="password"
             placeholder="Password"
             value={password}
+
             onChange={(e) => {
+
               setPassword(e.target.value);
-              setErrors((prev) => ({ ...prev, password: "", general: "" }));
+
+              setErrors((prev) => ({
+                ...prev,
+                password: "",
+                general: "",
+              }));
             }}
-            style={{ border: errors.password ? "1px solid red" : "1px solid #ccc" }}
+
+            style={{
+              border:
+                errors.password
+                  ? "1px solid red"
+                  : "1px solid #ccc",
+            }}
           />
+
           {errors.password && (
-            <p style={{ color: "red", fontSize: "0.85rem", margin: "4px 0" }}>
+            <p
+              style={{
+                color: "red",
+                fontSize: "0.85rem",
+                margin: "4px 0",
+              }}
+            >
               {errors.password}
             </p>
           )}
 
-          <div className="login-buttons">
-            <button type="button" onClick={() => handleLogin("student")} disabled={loading}>
-              {loading ? "..." : "Login as Student"}
-            </button>
-            <button type="button" onClick={() => handleLogin("academic")} disabled={loading}>
-              {loading ? "..." : "Login as Supervisor"}
-            </button>
-            <button type="button" onClick={() => handleLogin("admin")} disabled={loading}>
-              {loading ? "..." : "Login as Admin"}
-            </button>
+          {/* REMEMBER ME */}
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginTop: "10px",
+            }}
+          >
+
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+
+              onChange={(e) =>
+                setRememberMe(e.target.checked)
+              }
+            />
+
+            <span
+              style={{
+                color: "white",
+                fontSize: "0.95rem",
+                cursor: "pointer",
+              }}
+
+              onClick={() =>
+                setRememberMe(!rememberMe)
+              }
+            >
+              Remember me
+            </span>
+
           </div>
+
+          {/* STYLISH LOGIN BUTTONS */}
+
+          <div
+            style={{
+              display: "flex",
+              gap: "14px",
+              justifyContent: "center",
+            }}
+          >
+
+            {/* STUDENT */}
+
+            <button
+              type="button"
+              onClick={() => handleLogin("student")}
+              disabled={loadingRole !== null}
+
+
+              
+              style={{
+                padding: "10px",
+                borderRadius: "15px",
+                border: "none",
+                cursor: "pointer",
+                background:
+                  "linear-gradient(135deg, #2563eb, #1e3a8a)",
+                color: "white",
+                fontSize: "1rem",
+                fontWeight: "500",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                boxShadow:
+                  "0 4px 12px rgba(37,99,235,0.4)",
+              }}
+            >
+              {
+              loadingRole === "student"
+              ? "Loading..."
+              : "Login as Student"
+}
+            </button>
+
+            {/* WORKPLACE */}
+
+            <button
+              type="button"
+              onClick={() => handleLogin("workplace")}
+              disabled={loadingRole !== null && loadingRole !== "workplace" }
+
+              style={{
+                padding: "10px",
+                borderRadius: "15px",
+                border: "none",
+                cursor: "pointer",
+                background:
+                  "linear-gradient(135deg, #059669, #065f46)",
+                color: "white",
+                fontSize: "1rem",
+                fontWeight: "500",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                boxShadow:
+                  "0 4px 12px rgba(5,150,105,0.4)",
+              }}
+            >
+              {loadingRole === "workplace"
+                ? "Loading..."
+                : "Login as Workplace Supervisor"}
+            </button>
+
+            {/* ACADEMIC */}
+
+            <button
+              type="button"
+              onClick={() => handleLogin("academic")}
+              disabled={loadingRole !== null && loadingRole !== "academic"}
+
+              style={{
+                padding: "10px",
+                borderRadius: "15px",
+                border: "none",
+                cursor: "pointer",
+                background:
+                  "linear-gradient(135deg, #7c3aed, #4c1d95)",
+                color: "white",
+                fontSize: "1rem",
+                fontWeight: "500",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                boxShadow:
+                  "0 4px 12px rgba(124,58,237,0.4)",
+              }}
+            >
+              {loadingRole === "academic" 
+                ? "Loading..."
+                : "Login as Academic Supervisor"}
+            </button>
+
+          </div>
+
+          {/* EXTRA LINKS */}
 
           <div className="extra-links">
-            <Link to="/forgot-password">Forgot Password?</Link>
+
+            <Link to="/forgot-password">
+              Forgot Password?
+            </Link>
+
             <p>
-              Don't have an account? <Link to="/create-account">Signup</Link>
+              Don't have an account?{" "}
+
+              <Link to="/create-account">
+                Signup
+              </Link>
             </p>
+
           </div>
+
         </form>
 
+        {/* CONTACT INFO */}
+
         <div className="contact-info">
+
           <p>Need help? Contact us</p>
+
           <p>
             Email:{" "}
-            <a href="mailto:support.ILES@gmail.com">Support.ILES@gmail.com</a>
+
+            <a href="mailto:support.ILES@gmail.com">
+              Support.ILES@gmail.com
+            </a>
           </p>
+
           <p>
             Phone:{" "}
+
             <span
               className="phone"
+
               onClick={() => {
-                navigator.clipboard.writeText("+256776083497");
+
+                navigator.clipboard.writeText(
+                  "+256776083497"
+                );
+
                 alert("Phone number copied!");
               }}
             >
               +256 776 083497
             </span>
           </p>
+
         </div>
+
       </div>
+
     </div>
   );
 }
 
-export default LoginPage; */}
+export default LoginPage;
