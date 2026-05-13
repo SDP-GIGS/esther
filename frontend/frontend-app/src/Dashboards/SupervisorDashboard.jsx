@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../UserContext";
+import { API_BASE } from "../api";
+import ProfilePage from "../pages/ProfilePage";
 
 export default function SupervisorDashboard() {
   const { user } = useUser();
-  const { name, token } = user;
+
+const token = user?.token || localStorage.getItem("access");
+
+const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+const name =
+  user?.name ||
+  user?.first_name ||
+  storedUser.first_name ||
+  storedUser.email ||
+  "Student";
 
   const api = (url, options = {}) =>
-    fetch(url, {
+    fetch(`${API_BASE}${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +26,8 @@ export default function SupervisorDashboard() {
         ...options.headers,
       },
     });
-
+  
+  const [showProfile, setShowProfile] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -81,6 +94,16 @@ export default function SupervisorDashboard() {
   ];
 
   const s = styles;
+  if (showProfile) {
+  return (
+    <ProfilePage
+      onBack={() => setShowProfile(false)}
+      onLogout={() => {
+        window.location.href = "/";
+      }}
+    />
+  );
+}
 
   return (
     <div style={s.page}>
@@ -89,6 +112,13 @@ export default function SupervisorDashboard() {
           <h1 style={s.title}>Supervisor Dashboard</h1>
           <p style={s.subtitle}>Welcome, {name}</p>
         </div>
+        <div style={{ display: "flex", gap: "12px" }}></div>
+          <button
+           onClick={() => setShowProfile(true)}
+            style={s.profileBtn}
+            >
+            Profile
+          </button>
         <div style={s.dateBadge}>{new Date().toDateString()}</div>
       </div>
 
@@ -341,4 +371,13 @@ const styles = {
     background: "rgba(22,101,52,0.3)", border: "1px solid #166534",
     borderRadius: "8px", padding: "12px", color: "#86efac",
   },
+  profileBtn: {
+  padding: "10px 18px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#4a1d7a",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "0.9rem",
+},
 };
