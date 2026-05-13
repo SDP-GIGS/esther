@@ -1,9 +1,10 @@
-from rest_framework import viewsets
-from .models import Student, Report, Feedback, Supervisor
-from .serializers import StudentSerializer, ReportSerializer,FeedbackSerializer, SupervisorSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, viewsets
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
-from .models import ProofOfWork, Student, Report, Feedback, Supervisor, Goal, DailyLog, Attendance, GoalFeedback
+from .models import OTP, ProofOfWork, Student, Report, Feedback, Supervisor, Goal, DailyLog, Attendance
 from .serializers import (
     UserSerializer,
     StudentSerializer,
@@ -13,20 +14,16 @@ from .serializers import (
     AttendanceSerializer,
     DailyLogSerializer,
     GoalSerializer,
-    ProofOfWorkSerializer,
-    GoalFeedbackSerializer  
+    ProofOfWorkSerializer
 )
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import random
 from django.utils import timezone
 from datetime import date
-
-from django.contrib.auth.hashers import check_password
-
 
 
 
@@ -39,58 +36,43 @@ User = get_user_model()
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    print("login view ")
-
     email = request.data.get('email')
     password = request.data.get('password')
     role = request.data.get('role')
 
     if not email or not password or not role:
-        return Response(
-            {"error": "All fields required"},
-            status=400
-        )
+        return Response({"error": "All fields required"}, status=400)
 
     try:
         user = User.objects.get(email=email)
-
     except User.DoesNotExist:
-        return Response(
-            {"error": "User not found"},
-            status=404
-        )
+        return Response({"error": "User not found"}, status=404)
 
-    user = authenticate(
-        username=user.username,
-        password=password
-    )
+    user = authenticate(username=user.username, password=password)
 
     if user is None:
-        return Response(
-            {"error": "Invalid password"},
-            status=401
-        )
+        return Response({"error": "Invalid password"}, status=401)
 
+    # ROLE VERIFICATION
     if user.role != role:
-        return Response(
-            {
-                "error": f"You are not registered as {role}"
-            },
-            status=403
-        )
+        return Response({
+            "error": f"You are not registered as {role}"
+        }, status=403)
 
     refresh = RefreshToken.for_user(user)
 
+    # ACCOUNT VERIFICATION CHECK
+    if not user.is_verified:    
+        return Response({"error": "Account not verified"}, status=403)
+
     return Response({
-    "access": str(refresh.access_token),
-    "refresh": str(refresh),
-    "role": user.role,
-    "username": user.username,
-    "email": user.email,
-})
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+        "role": user.role,
+        "username": user.username
+    })
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def check_in(request):
     try:
         student = Student.objects.get(user=request.user)
@@ -113,7 +95,6 @@ def check_in(request):
     return Response({"message": "Check-in successful"})
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def check_out(request):
     try:
         student = Student.objects.get(user=request.user)
@@ -134,313 +115,8 @@ def check_out(request):
     attendance.save()
 
     return Response({"message": "Check-out successful"})
-
-@api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticated])
-def submit_goal_feedback(request):
-
-    # GET all feedback for a goal
-    if request.method == 'GET':
-
-        goal_id = request.GET.get('goal_id')
-
-        if not goal_id:
-            return Response(
-                {"error": "goal_id is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        feedbacks = GoalFeedback.objects.filter(goal_id=goal_id)
-
-        serializer = GoalFeedbackSerializer(
-            feedbacks,
-            many=True
-        )
-
-        return Response(serializer.data)
-
-    # POST feedback
-    if request.method == 'POST':
-
-        goal_id = request.data.get('goal')
-        feedback_text = request.data.get('feedback')
-
-        if not goal_id or not feedback_text:
-            return Response(
-                {"error": "goal and feedback are required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            goal = Goal.objects.get(id=goal_id)
-
-        except Goal.DoesNotExist:
-            return Response(
-                {"error": "Goal not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        feedback = GoalFeedback.objects.create(
-            goal=goal,
-            supervisor=request.user,
-            feedback=feedback_text
-        )
-
-        serializer = GoalFeedbackSerializer(feedback)
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED
-        )
-@api_view(['POST', 'GET'])
-@permission_classes([IsAuthenticated])
-def supervisor_goals(request):
-
-    # GET all goals created by supervisor/admin
-    if request.method == 'GET':
-
-        goals = Goal.objects.filter(created_by=request.user)
-
-        serializer = GoalSerializer(goals, many=True)
-
-        return Response(serializer.data)
-
-    # CREATE goal
-    if request.method == 'POST':
-
-        title = request.data.get('title')
-        description = request.data.get('description')
-        student_id = request.data.get('student')
-
-        if not title or not description or not student_id:
-            return Response(
-                {
-                    "error": "title, description and student are required"
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            student = User.objects.get(id=student_id)
-
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Student not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        goal = Goal.objects.create(
-            title=title,
-            description=description,
-            student=student,
-            created_by=request.user
-        )
-
-        serializer = GoalSerializer(goal)
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED
-        )    
     
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def change_password(request):
 
-    old_password = request.data.get('old_password')
-
-    new_password = request.data.get('new_password')
-
-    if not old_password or not new_password:
-
-        return Response(
-            {"error": "Both passwords required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    user = request.user
-
-    if not user.check_password(old_password):
-
-        return Response(
-            {"error": "Old password incorrect"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    user.set_password(new_password)
-
-    user.save()
-
-    return Response({
-        "message": "Password changed successfully"
-    })
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_profile(request):
-
-    user = request.user
-
-    username = request.data.get('username')
-    email = request.data.get('email')
-
-    if username:
-        user.username = username
-
-    if email:
-        user.email = email
-
-    user.save()
-
-    return Response({
-        "message": "Profile updated successfully",
-        "username": user.username,
-        "email": user.email
-    })
-
-#@api_view(['POST'])
-#def send_otp(request):
-
-    # email = request.data.get('email')
-
-    # if not email:
-
-    #     return Response(
-    #         {"error": "Email required"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # try:
-    #     user = User.objects.get(email=email)
-
-    # except User.DoesNotExist:
-
-    #     return Response(
-    #         {"error": "User not found"},
-    #         status=status.HTTP_404_NOT_FOUND
-    #     )
-
-    # code = str(random.randint(100000, 999999))
-
-    # OTP.objects.create(
-    #     user=user,
-    #     code=code
-    # )
-
-    # send_mail(
-    #     'Your OTP Code',
-    #     f'Your OTP code is: {code}',
-    #     'yourgmail@gmail.com',
-    #     [email],
-    #     fail_silently=False,
-    # )
-
-    return Response({
-        "message": "OTP sent successfully"
-    })
-#@api_view(['POST'])
-#def verify_otp(request):
-
-    # email = request.data.get('email')
-
-    # code = request.data.get('code')
-
-    # if not email or not code:
-
-    #     return Response(
-    #         {"error": "Email and code required"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # try:
-    #     user = User.objects.get(email=email)
-
-    # except User.DoesNotExist:
-
-    #     return Response(
-    #         {"error": "User not found"},
-    #         status=status.HTTP_404_NOT_FOUND
-    #     )
-
-    # otp = OTP.objects.filter(
-    #     user=user,
-    #     code=code,
-    #     is_verified=False
-    # ).last()
-
-    # if not otp:
-
-    #     return Response(
-    #         {"error": "Invalid OTP"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # if otp.is_expired():
-
-    #     return Response(
-    #         {"error": "OTP expired"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # otp.is_verified = True
-
-    # otp.save()
-
-    return Response({
-        "message": "OTP verified successfully"
-    })
-#@api_view(['POST'])
-#def forgot_password(request):
-
-    # email = request.data.get('email')
-
-    # code = request.data.get('code')
-
-    # new_password = request.data.get('new_password')
-
-    # if not email or not code or not new_password:
-
-    #     return Response(
-    #         {"error": "All fields required"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # try:
-    #     user = User.objects.get(email=email)
-
-    # except User.DoesNotExist:
-
-    #     return Response(
-    #         {"error": "User not found"},
-    #         status=status.HTTP_404_NOT_FOUND
-    #     )
-
-    # otp = OTP.objects.filter(
-    #     user=user,
-    #     code=code,
-    #     is_verified=True
-    # ).last()
-
-    # if not otp:
-
-    #     return Response(
-    #         {"error": "OTP verification required"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # if otp.is_expired():
-
-    #     return Response(
-    #         {"error": "OTP expired"},
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
-
-    # user.set_password(new_password)
-
-    # user.save()
-
-    return Response({
-        "message": "Password reset successful"
-    })
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -462,22 +138,11 @@ class RegisterView(APIView):
             return Response({"error": "Invalid role"}, status=400)
 
         user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
-        role=role
+            username=username,
+            email=email,
+            password=password,
+            role=role
         )
-
-        # Automatically create related profile
-        if role == "student":
-            Student.objects.create(
-            user=user
-        )
-
-        elif role in ["academic", "workplace"]:
-            Supervisor.objects.create(
-            user=user
-        )   
 
         refresh = RefreshToken.for_user(user)
 
@@ -577,12 +242,23 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Student.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role in ["academic", "workplace"]:
+            return Student.objects.all()
+
+        return Student.objects.filter(user=user)
+
 
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -597,14 +273,12 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 class FeedbackViewSet(viewsets.ModelViewSet):
     queryset = Feedback.objects.all()
-    serializer_class =FeedbackSerializer
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
 
 class SupervisorViewSet(viewsets.ModelViewSet):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer
-<<<<<<< Updated upstream
-    
-=======
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
@@ -657,13 +331,65 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         serializer.save(created_by=user)
     
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Attendance.objects.filter(student__user=self.request.user)
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(user=self.request.user)
+        serializer.save(student=student)
+
+class DailyLogViewSet(viewsets.ModelViewSet):
+    queryset = DailyLog.objects.all()
+    serializer_class = DailyLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return DailyLog.objects.filter(student__user=self.request.user)
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(user=self.request.user)
+        serializer.save(student=student)
+
+class GoalViewSet(viewsets.ModelViewSet):
+    serializer_class = GoalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == "academic":
+            return Goal.objects.filter(created_by=user)
+
+        if user.role == "workplace":
+            supervisor = Supervisor.objects.get(user=user)
+            return Goal.objects.filter(supervisor=supervisor)
+
+        if user.role == "student":
+            student = Student.objects.get(user=user)
+            return Goal.objects.filter(student=student)
+
+        return Goal.objects.none()
+
+    def perform_create(self, serializer):
+        user = self.request.user
+
+        if user.role != "academic":
+            return
+
+        serializer.save(created_by=user)
+    
 class ProofOfWorkViewSet(viewsets.ModelViewSet):
     queryset = ProofOfWork.objects.all()
     serializer_class = ProofOfWorkSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ProofOfWork.objects.filter(student__user=self)
+        return ProofOfWork.objects.filter(student__user=self.request.user)
 
     def perform_create(self, serializer):
         student = Student.objects.get(user=self.request.user)
@@ -738,4 +464,38 @@ def assign_goal_to_student(request, pk):
     # otp_obj.save()
 
     # return Response({"message": "Account verified"})
->>>>>>> Stashed changes
+    
+@api_view(['POST'])
+def send_otp(request):
+    email = request.data.get('email')
+
+    user = User.objects.get(email=email)
+
+    code = str(random.randint(100000, 999999))
+
+    OTP.objects.create(user=user, code=code)
+
+    # For now: print instead of email
+    print("OTP:", code)
+
+    return Response({"message": "OTP sent"})
+
+@api_view(['POST'])
+def verify_otp(request):
+    email = request.data.get('email')
+    code = request.data.get('otp')
+
+    user = User.objects.get(email=email)
+
+    otp_obj = OTP.objects.filter(user=user, code=code, is_used=False).last()
+
+    if not otp_obj:
+        return Response({"error": "Invalid OTP"}, status=400)
+
+    user.is_verified = True
+    user.save()
+
+    otp_obj.is_used = True
+    otp_obj.save()
+
+    return Response({"message": "Account verified"})
