@@ -1,3 +1,4 @@
+#import ssl
 """
 Django settings for backend project.
 
@@ -12,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,7 +89,7 @@ DATABASES = {
     }
 }
 
-
+DEBUG = True
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -116,6 +118,20 @@ SIMPLE_JWT = {
 }
 
 
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+#EMAIL_HOST = 'smtp.gmail.com'
+
+#EMAIL_PORT = 587
+
+#EMAIL_USE_TLS = True
+
+#EMAIL_HOST_USER = 'jerredens921@gmail.com'
+
+#EMAIL_HOST_PASSWORD = 'twzjvhnlqgqjvuv'
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -132,3 +148,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+#ssl._create_default_https_context = ssl._create_unverified_context

@@ -285,6 +285,58 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
+        return Attendance.objects.filter(student__user=self)
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(user=self.request.user)
+        serializer.save(student=student)
+
+class DailyLogViewSet(viewsets.ModelViewSet):
+    queryset = DailyLog.objects.all()
+    serializer_class = DailyLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return DailyLog.objects.filter(student__user=self)
+
+    def perform_create(self, serializer):
+        student = Student.objects.get(user=self.request.user)
+        serializer.save(student=student)
+
+class GoalViewSet(viewsets.ModelViewSet):
+    serializer_class = GoalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == "academic":
+            return Goal.objects.filter(created_by=user)
+
+        if user.role == "workplace":
+            supervisor = Supervisor.objects.get(user=user)
+            return Goal.objects.filter(supervisor=supervisor)
+
+        if user.role == "student":
+            student = Student.objects.get(user=user)
+            return Goal.objects.filter(student=student)
+
+        return Goal.objects.none()
+
+    def perform_create(self, serializer):
+        user = self.request.user
+
+        if user.role != "academic":
+            return
+
+        serializer.save(created_by=user)
+    
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
         return Attendance.objects.filter(student__user=self.request.user)
 
     def perform_create(self, serializer):
@@ -376,6 +428,42 @@ def assign_goal_to_student(request, pk):
     goal.save()
 
     return Response({"message": "Goal assigned to student"})
+
+#@api_view(['POST'])
+#def send_otp(request):
+    # email = request.data.get('email')
+
+    # user = User.objects.get(email=email)
+
+    # code = str(random.randint(100000, 999999))
+
+    # OTP.objects.create(user=user, code=code)
+
+    # # For now: print instead of email
+    # print("OTP:", code)
+
+    # return Response({"message": "OTP sent"})
+
+
+#@api_view(['POST'])
+#def verify_otp(request):
+    # email = request.data.get('email')
+    # code = request.data.get('otp')
+
+    # user = User.objects.get(email=email)
+
+    # otp_obj = OTP.objects.filter(user=user, code=code, is_used=False).last()
+
+    # if not otp_obj:
+    #     return Response({"error": "Invalid OTP"}, status=400)
+
+    # user.is_verified = True
+    # user.save()
+
+    # otp_obj.is_used = True
+    # otp_obj.save()
+
+    # return Response({"message": "Account verified"})
     
 @api_view(['POST'])
 def send_otp(request):
