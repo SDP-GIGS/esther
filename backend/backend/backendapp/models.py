@@ -77,6 +77,9 @@ class Attendance(models.Model):
 
     date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.date}"
+
 class DailyLog(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     content = models.TextField()
