@@ -9,7 +9,8 @@ class User(AbstractUser):
         ('workplace', 'Workplace Supervisor'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    is_verified = models.BooleanField(default=False)
+    email = models.EmailField(unique=True)
+    #is_verified = models.BooleanField(default=False)
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -73,6 +74,9 @@ class Attendance(models.Model):
 
     date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.date}"
+
 class DailyLog(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     content = models.TextField()
@@ -131,8 +135,45 @@ class ProofOfWork(models.Model):
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    code = models.CharField(max_length=6)
+#class OTP(models.Model):
+
+ #   user = models.ForeignKey(
+  #      User,
+   #     on_delete=models.CASCADE
+    #)
+
+    #code = models.CharField(max_length=6)
+
+    #created_at = models.DateTimeField(auto_now_add=True)
+
+    #is_verified = models.BooleanField(default=False)
+
+   # def is_expired(self):
+    #    return timezone.now() > self.created_at + timedelta(minutes=10)
+
+    #def __str__(self):
+     #   return f"{self.user.username} - {self.code}"
+
+
+class GoalFeedback(models.Model):
+    goal = models.ForeignKey(
+        'Goal',
+        on_delete=models.CASCADE,
+        related_name='feedbacks'
+    )
+
+    supervisor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    feedback = models.TextField()
+
     created_at = models.DateTimeField(auto_now_add=True)
+<<<<<<< Updated upstream
     is_used = models.BooleanField(default=False)
+=======
+
+    def __str__(self):
+        return f"Feedback for Goal {self.goal.id}"
+>>>>>>> Stashed changes
