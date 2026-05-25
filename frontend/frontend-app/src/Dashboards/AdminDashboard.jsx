@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../UserContext";
+import { API_BASE } from "../api";
+import ProfilePage from "../pages/ProfilePage";
 
 export default function AdminDashboard() {
   const { user } = useUser();
-  const { name, token } = user;
+
+const token = user?.token || localStorage.getItem("access");
+
+const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+const name =
+  user?.name ||
+  user?.first_name ||
+  storedUser.first_name ||
+  storedUser.email ||
+  "Student";
 
   const api = (url, options = {}) =>
-    fetch(url, {
+    fetch(`${API_BASE}${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +26,7 @@ export default function AdminDashboard() {
         ...options.headers,
       },
     });
-
+  const [showProfile, setShowProfile] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [students, setStudents] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
@@ -26,24 +38,111 @@ export default function AdminDashboard() {
   const [viewStudent, setViewStudent] = useState(null);
 
   useEffect(() => {
-    api("/api/students/").then((r) => r.json()).then(setStudents).catch(() => {});
-    api("/api/supervisors/").then((r) => r.json()).then(setSupervisors).catch(() => {});
-    api("/api/attendance/").then((r) => r.json()).then(setAttendance).catch(() => {});
-  }, []);
 
-  const handleSendGoal = () => {
-    if (!goalText.trim() || !selectedSupervisor) {
-      setGoalMsg("Select a supervisor and enter a goal.");
+  const loadDashboard = async () => {
+
+    try {
+
+      const studentsRes =
+        await api("/api/students/");
+
+      const studentsData =
+        await studentsRes.json();
+
+      if (studentsRes.ok) {
+        setStudents(studentsData);
+      }
+
+      const supervisorsRes =
+        await api("/api/supervisors/");
+
+      const supervisorsData =
+        await supervisorsRes.json();
+
+      if (supervisorsRes.ok) {
+        setSupervisors(supervisorsData);
+      }
+
+      const attendanceRes =
+        await api("/api/attendance/");
+
+      const attendanceData =
+        await attendanceRes.json();
+
+      if (attendanceRes.ok) {
+        setAttendance(attendanceData);
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Dashboard load failed:",
+        error
+      );
+    }
+  };
+
+  loadDashboard();
+
+}, [token]);
+
+  const handleSendGoal = async () => {
+
+  if (
+    !goalText.trim() ||
+    !selectedSupervisor
+  ) {
+
+    setGoalMsg(
+      "Select a supervisor and enter a goal."
+    );
+
+    return;
+  }
+
+  try {
+
+    const response = await api(
+      "/api/goals/supervisor/",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          supervisor: selectedSupervisor,
+          goal: goalText,
+          type: goalType,
+        }),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      setGoalMsg(
+        data.error ||
+        "Failed to send goal"
+      );
+
       return;
     }
-    api("/api/goals/supervisor/", {
-      method: "POST",
-      body: JSON.stringify({ supervisor: selectedSupervisor, goal: goalText, type: goalType }),
-    }).then(() => {
-      setGoalMsg("Goal sent to supervisor!");
-      setGoalText("");
-    });
-  };
+
+    setGoalMsg(
+      "Goal sent successfully!"
+    );
+
+    setGoalText("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    setGoalMsg(
+      "Server error"
+    );
+  }
+};
 
   const tabs = [
     { id: "overview",    label: "Overview" },
@@ -55,6 +154,16 @@ export default function AdminDashboard() {
   ];
 
   const s = styles;
+  if (showProfile) {
+  return (
+    <ProfilePage
+      onBack={() => setShowProfile(false)}
+      onLogout={() => {
+        window.location.href = "/";
+      }}
+    />
+  );
+}
 
   return (
     <div style={s.page}>
@@ -63,6 +172,13 @@ export default function AdminDashboard() {
           <h1 style={s.title}>Admin Dashboard</h1>
           <p style={s.subtitle}>Welcome, {name}</p>
         </div>
+        <div style={{ display: "flex", gap: "12px" }}></div>
+        <button
+        onClick={() => setShowProfile(true)}
+        style={s.profileBtn}
+        >
+        Profile
+        </button>
         <div style={s.dateBadge}>{new Date().toDateString()}</div>
       </div>
 
@@ -336,4 +452,13 @@ const styles = {
     background: "rgba(22,101,52,0.3)", border: "1px solid #166534",
     borderRadius: "8px", padding: "12px", color: "#86efac",
   },
+  profileBtn: {
+  padding: "10px 18px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#991b1b",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "0.9rem",
+},
 };
