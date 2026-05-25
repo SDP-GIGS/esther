@@ -177,10 +177,9 @@ class GoalFeedback(models.Model):
     feedback = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
-<<<<<<< Updated upstream
+
     is_used = models.BooleanField(default=False)
-=======
+
 
     def __str__(self):
-        return f"Feedback for Goal {self.goal.id}"
->>>>>>> Stashed changes
+        return f"{self.supervisor} - {self.goal}"
