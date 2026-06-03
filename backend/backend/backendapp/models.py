@@ -74,10 +74,16 @@ class Attendance(models.Model):
 
     date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.date}"
+
 class DailyLog(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     content = models.TextField()
     date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student} - {self.date}"
 
 class Goal(models.Model):
     GOAL_TYPE = (
@@ -132,6 +138,10 @@ class ProofOfWork(models.Model):
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} -{self.title}"
+
+
 #class OTP(models.Model):
 
  #   user = models.ForeignKey(
@@ -167,10 +177,9 @@ class GoalFeedback(models.Model):
     feedback = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
-<<<<<<< Updated upstream
+
     is_used = models.BooleanField(default=False)
-=======
+
 
     def __str__(self):
-        return f"Feedback for Goal {self.goal.id}"
->>>>>>> Stashed changes
+        return f"{self.supervisor} - {self.feedback}"
