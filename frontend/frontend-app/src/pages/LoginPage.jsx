@@ -76,8 +76,8 @@ function LoginPage() {
   return (
     <div style={styles.loginPage}>
       <div style={styles.welcomeText}>
-        <h1>Welcome to</h1>
-        <h1>ILES</h1>
+        <h1 style={styles.welcomeTitle}>Welcome to</h1>
+        <h1 style={styles.ilesTitle}>ILES</h1>
       </div>
 
       <div style={styles.loginBox}>
@@ -155,7 +155,7 @@ function LoginPage() {
   );
 }
 
-/* ====================== STYLES (800px width) ====================== */
+/* ====================== STYLES ====================== */
 const styles = {
   loginPage: {
     minHeight: "100vh",
@@ -166,13 +166,28 @@ const styles = {
     justifyContent: "center",
     padding: "20px",
     fontFamily: "'Segoe UI', sans-serif",
-    color: "#e0e7ff",
   },
 
   welcomeText: {
     textAlign: "center",
-    marginBottom: "40px",
+    marginBottom: "50px",
+  },
+
+  welcomeTitle: {
     color: "#ffffff",
+    margin: "0 0 8px 0",
+    fontSize: "3.2rem",
+    fontWeight: "500",
+    textShadow: "0 4px 15px rgba(0, 0, 0, 0.8)",
+  },
+
+  ilesTitle: {
+    color: "#ffffff",
+    margin: "0",
+    fontSize: "4.8rem",
+    fontWeight: "700",
+    textShadow: "0 4px 20px rgba(0, 0, 0, 0.9)",
+    letterSpacing: "6px",
   },
 
   loginBox: {
@@ -181,7 +196,7 @@ const styles = {
     borderRadius: "20px",
     padding: "50px 60px",
     width: "100%",
-    maxWidth: "800px",           // ← Increased to 800px as requested
+    maxWidth: "800px",
     boxShadow: "0 20px 40px rgba(0, 0, 0, 0.7)",
   },
 
@@ -192,23 +207,8 @@ const styles = {
     fontSize: "2.1rem",
   },
 
-  label: {
-    color: "#c3d0ff",
-    fontSize: "1.1rem",
-    marginBottom: "8px",
-    display: "block",
-    fontWeight: "500",
-  },
-
-  input: {
-    width: "100%",
-    padding: "14px 16px",
-    marginBottom: "18px",
-    background: "#1e2937",
-    color: "#e0e7ff",
-    borderRadius: "10px",
-    fontSize: "1.05rem",
-  },
+  label: { color: "#c3d0ff", fontSize: "1.1rem", marginBottom: "8px", display: "block", fontWeight: "500" },
+  input: { width: "100%", padding: "14px 16px", marginBottom: "18px", background: "#1e2937", color: "#e0e7ff", borderRadius: "10px", fontSize: "1.05rem" },
 
   errorText: { color: "#f87171", textAlign: "center", marginBottom: "20px", fontWeight: "500" },
   smallError: { color: "#f87171", fontSize: "0.88rem", margin: "-6px 0 14px 4px" },
