@@ -10,6 +10,7 @@ function LoginPage() {
   const [loadingRole, setLoadingRole] = useState(null);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Load remembered credentials
   useEffect(() => {
     const savedEmail = localStorage.getItem("savedEmail");
     const savedPassword = localStorage.getItem("savedPassword");
@@ -170,40 +171,40 @@ const styles = {
 
   welcomeText: {
     textAlign: "center",
-    marginBottom: "60px",
+    marginBottom: "65px",
   },
 
   welcomeTitle: {
     color: "#e0e7ff",
-    margin: "0",
-    fontSize: "2.8rem",
+    margin: "0 0 12px 0",
+    fontSize: "2.9rem",
     fontWeight: "500",
   },
 
   ilesTitle: {
     color: "#ffffff",
-    margin: "8px 0 0 0",
-    fontSize: "3.0rem",
-    fontWeight: "600",
-    letterSpacing: "5px",
-    textShadow: "0 4px 25px rgba(0, 0, 0, 0.6)",
+    margin: "0",
+    fontSize: "5.6rem",
+    fontWeight: "700",
+    letterSpacing: "6px",
+    textShadow: "0 6px 30px rgba(0, 0, 0, 0.75)",
   },
 
   loginBox: {
-    background: "rgba(15, 23, 42, 0.95)",
-    border: "1px solid rgba(100, 116, 139, 0.3)",
+    background: "rgba(15, 23, 42, 0.96)",
+    border: "1px solid rgba(100, 116, 139, 0.4)",
     borderRadius: "24px",
-    padding: "48px 56px",
+    padding: "52px 60px",
     width: "100%",
     maxWidth: "800px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+    boxShadow: "0 25px 60px -12px rgba(0, 0, 0, 0.65)",
   },
 
   heading: {
     color: "#ffffff",
     textAlign: "center",
-    marginBottom: "36px",
-    fontSize: "1.85rem",
+    marginBottom: "38px",
+    fontSize: "1.9rem",
     fontWeight: "600",
   },
 
@@ -217,12 +218,12 @@ const styles = {
 
   input: {
     width: "100%",
-    padding: "14px 18px",
-    marginBottom: "20px",
+    padding: "15px 18px",
+    marginBottom: "22px",
     background: "#1e2937",
     color: "#e2e8f0",
     border: "1px solid #475569",
-    borderRadius: "10px",
+    borderRadius: "12px",
     fontSize: "1.05rem",
     outline: "none",
   },
@@ -230,7 +231,7 @@ const styles = {
   errorText: { color: "#f87171", textAlign: "center", marginBottom: "20px", fontWeight: "500" },
   smallError: { color: "#f87171", fontSize: "0.85rem", margin: "-6px 0 16px 4px" },
 
-  rememberContainer: { display: "flex", alignItems: "center", gap: "10px", margin: "10px 0 28px 0" },
+  rememberContainer: { display: "flex", alignItems: "center", gap: "10px", margin: "12px 0 30px 0" },
   rememberText: { color: "#cbd5e1", fontSize: "1rem", cursor: "pointer" },
 
   buttonGroup: { display: "flex", flexDirection: "column", gap: "14px", marginBottom: "32px" },
@@ -243,7 +244,7 @@ const styles = {
   link: { color: "#60a5fa", textDecoration: "none", fontWeight: "500" },
   signupText: { marginTop: "12px", color: "#94a3b8" },
 
-  contactInfo: { textAlign: "center", marginTop: "32px", borderTop: "1px solid rgba(148,163,184,0.2)", paddingTop: "24px" },
+  contactInfo: { textAlign: "center", marginTop: "32px", borderTop: "1px solid rgba(148,163,184,0.25)", paddingTop: "24px" },
   contactText: { color: "#94a3b8", margin: "6px 0", fontSize: "0.95rem" },
   contactLink: { color: "#60a5fa" },
   phone: { color: "#60a5fa", cursor: "pointer", textDecoration: "underline" },
