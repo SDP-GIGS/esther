@@ -155,7 +155,7 @@ function LoginPage() {
   );
 }
 
-/* ====================== UPDATED STYLES ====================== */
+/* ====================== STYLES (800px width) ====================== */
 const styles = {
   loginPage: {
     minHeight: "100vh",
@@ -179,9 +179,9 @@ const styles = {
     background: "rgba(15, 23, 42, 0.97)",
     border: "1px solid rgba(148, 163, 184, 0.4)",
     borderRadius: "20px",
-    padding: "50px 45px",
+    padding: "50px 60px",
     width: "100%",
-    maxWidth: "520px",           // Increased size
+    maxWidth: "800px",           // ← Increased to 800px as requested
     boxShadow: "0 20px 40px rgba(0, 0, 0, 0.7)",
   },
 
@@ -189,12 +189,12 @@ const styles = {
     color: "#ffffff",
     textAlign: "center",
     marginBottom: "32px",
-    fontSize: "2rem",
+    fontSize: "2.1rem",
   },
 
   label: {
     color: "#c3d0ff",
-    fontSize: "1.08rem",
+    fontSize: "1.1rem",
     marginBottom: "8px",
     display: "block",
     fontWeight: "500",
