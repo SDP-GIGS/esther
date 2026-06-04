@@ -22,7 +22,55 @@ function LoginPage() {
   }, []);
 
   const handleLogin = async (role) => {
-    // ... (your handleLogin function stays the same)
+    const newErrors = {};
+    if (!email.trim()) newErrors.email = "Email is required";
+    if (!password.trim()) newErrors.password = "Password is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoadingRole(role);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors({ general: data.detail || "Invalid login credentials" });
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify({
+        name: data.user?.first_name || data.user?.email,
+        email: data.user?.email,
+        role: data.user?.role
+      }));
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      localStorage.setItem("role", role);
+
+      if (rememberMe) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("savedPassword", password);
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedPassword");
+      }
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrors({ general: "Something went wrong. Please try again." });
+    } finally {
+      setLoadingRole(null);
+    }
   };
 
   return (
@@ -47,10 +95,7 @@ function LoginPage() {
               setEmail(e.target.value);
               setErrors((prev) => ({ ...prev, email: "", general: "" }));
             }}
-            style={{
-              ...styles.input,
-              border: errors.email ? "2px solid #f87171" : "1px solid #64748b",
-            }}
+            style={{ ...styles.input, border: errors.email ? "2px solid #f87171" : "1px solid #64748b" }}
           />
           {errors.email && <p style={styles.smallError}>{errors.email}</p>}
 
@@ -63,20 +108,12 @@ function LoginPage() {
               setPassword(e.target.value);
               setErrors((prev) => ({ ...prev, password: "", general: "" }));
             }}
-            style={{
-              ...styles.input,
-              border: errors.password ? "2px solid #f87171" : "1px solid #64748b",
-            }}
+            style={{ ...styles.input, border: errors.password ? "2px solid #f87171" : "1px solid #64748b" }}
           />
           {errors.password && <p style={styles.smallError}>{errors.password}</p>}
 
           <div style={styles.rememberContainer}>
-            <input
-              type="checkbox"
-              id="rememberMe"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
+            <input type="checkbox" id="rememberMe" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
             <span style={styles.rememberText} onClick={() => setRememberMe(!rememberMe)}>
               Remember me
             </span>
@@ -118,7 +155,7 @@ function LoginPage() {
   );
 }
 
-/* ==================== STYLES ==================== */
+/* ====================== UPDATED STYLES ====================== */
 const styles = {
   loginPage: {
     minHeight: "100vh",
@@ -132,50 +169,65 @@ const styles = {
     color: "#e0e7ff",
   },
 
-  welcomeText: { textAlign: "center", marginBottom: "30px", color: "#ffffff" },
-
-  loginBox: {
-    background: "rgba(15, 23, 42, 0.96)",
-    border: "1px solid rgba(148, 163, 184, 0.4)",
-    borderRadius: "16px",
-    padding: "40px 35px",
-    width: "100%",
-    maxWidth: "460px",
-    boxShadow: "0 15px 35px rgba(0, 0, 0, 0.7)",
+  welcomeText: {
+    textAlign: "center",
+    marginBottom: "40px",
+    color: "#ffffff",
   },
 
-  heading: { color: "#ffffff", textAlign: "center", marginBottom: "28px", fontSize: "1.85rem" },
+  loginBox: {
+    background: "rgba(15, 23, 42, 0.97)",
+    border: "1px solid rgba(148, 163, 184, 0.4)",
+    borderRadius: "20px",
+    padding: "50px 45px",
+    width: "100%",
+    maxWidth: "520px",           // Increased size
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.7)",
+  },
 
-  label: { color: "#c3d0ff", fontSize: "1.05rem", marginBottom: "6px", display: "block", fontWeight: "500" },
+  heading: {
+    color: "#ffffff",
+    textAlign: "center",
+    marginBottom: "32px",
+    fontSize: "2rem",
+  },
+
+  label: {
+    color: "#c3d0ff",
+    fontSize: "1.08rem",
+    marginBottom: "8px",
+    display: "block",
+    fontWeight: "500",
+  },
 
   input: {
     width: "100%",
-    padding: "13px 14px",
-    marginBottom: "16px",
+    padding: "14px 16px",
+    marginBottom: "18px",
     background: "#1e2937",
     color: "#e0e7ff",
-    borderRadius: "8px",
-    fontSize: "1rem",
+    borderRadius: "10px",
+    fontSize: "1.05rem",
   },
 
-  errorText: { color: "#f87171", textAlign: "center", marginBottom: "16px", fontWeight: "500" },
-  smallError: { color: "#f87171", fontSize: "0.85rem", margin: "-6px 0 12px 4px" },
+  errorText: { color: "#f87171", textAlign: "center", marginBottom: "20px", fontWeight: "500" },
+  smallError: { color: "#f87171", fontSize: "0.88rem", margin: "-6px 0 14px 4px" },
 
-  rememberContainer: { display: "flex", alignItems: "center", gap: "10px", margin: "12px 0 24px 0" },
-  rememberText: { color: "#c0d0ff", fontSize: "0.98rem", cursor: "pointer" },
+  rememberContainer: { display: "flex", alignItems: "center", gap: "10px", margin: "14px 0 26px 0" },
+  rememberText: { color: "#c0d0ff", fontSize: "1rem", cursor: "pointer" },
 
-  buttonGroup: { display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" },
+  buttonGroup: { display: "flex", flexDirection: "column", gap: "14px", marginBottom: "28px" },
 
-  studentBtn: { padding: "14px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #2563eb, #1e40af)", color: "white", fontSize: "1.02rem", fontWeight: "600", cursor: "pointer" },
-  workplaceBtn: { padding: "14px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #059669, #047857)", color: "white", fontSize: "1.02rem", fontWeight: "600", cursor: "pointer" },
-  academicBtn: { padding: "14px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #7c3aed, #5b21b6)", color: "white", fontSize: "1.02rem", fontWeight: "600", cursor: "pointer" },
+  studentBtn: { padding: "16px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #2563eb, #1e40af)", color: "white", fontSize: "1.05rem", fontWeight: "600", cursor: "pointer" },
+  workplaceBtn: { padding: "16px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #059669, #047857)", color: "white", fontSize: "1.05rem", fontWeight: "600", cursor: "pointer" },
+  academicBtn: { padding: "16px", borderRadius: "12px", border: "none", background: "linear-gradient(135deg, #7c3aed, #5b21b6)", color: "white", fontSize: "1.05rem", fontWeight: "600", cursor: "pointer" },
 
-  extraLinks: { textAlign: "center", marginBottom: "20px" },
+  extraLinks: { textAlign: "center", marginBottom: "24px" },
   link: { color: "#a5b4fc", textDecoration: "none", fontWeight: "500" },
   signupText: { color: "#c0d0ff", marginTop: "12px" },
 
-  contactInfo: { textAlign: "center", marginTop: "24px", borderTop: "1px solid rgba(148,163,184,0.3)", paddingTop: "20px" },
-  contactText: { color: "#b0b8e0", margin: "6px 0", fontSize: "0.95rem" },
+  contactInfo: { textAlign: "center", marginTop: "28px", borderTop: "1px solid rgba(148,163,184,0.3)", paddingTop: "24px" },
+  contactText: { color: "#b0b8e0", margin: "8px 0", fontSize: "1rem" },
   contactLink: { color: "#a5b4fc" },
   phone: { color: "#a5b4fc", cursor: "pointer", textDecoration: "underline" },
 };
