@@ -183,9 +183,9 @@ const styles = {
   ilesTitle: {
     color: "#ffffff",
     margin: "8px 0 0 0",
-    fontSize: "5.2rem",
-    fontWeight: "700",
-    letterSpacing: "8px",
+    fontSize: "3.0rem",
+    fontWeight: "600",
+    letterSpacing: "5px",
     textShadow: "0 4px 25px rgba(0, 0, 0, 0.6)",
   },
 
