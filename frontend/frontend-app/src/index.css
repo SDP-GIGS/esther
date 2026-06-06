@@ -19,6 +19,7 @@
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
+  background-color: #c084fc;
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -52,6 +53,7 @@
 
 body {
   margin: 0px;
+  background-color: #c084fc;
 }
 
 #root {
