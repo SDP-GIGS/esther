@@ -142,7 +142,7 @@ const styles = {
   },
 
   button: {
-    width: "100%",
+    width: "10%",
     padding: 12,
     borderRadius: 6,
     border: "none",
