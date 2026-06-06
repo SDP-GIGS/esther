@@ -158,7 +158,7 @@ const styles = {
   },
 
   link: {
-    color: "#a78bfa",
+    color: "#4825b0",
     cursor: "pointer",
     textDecoration: "underline",
   },
@@ -170,7 +170,7 @@ const styles = {
   },
 
   success: {
-    color: "#141917",
+    color: "#34d399",
     marginBottom: 10,
     fontSize: 13,
   },
