@@ -170,7 +170,7 @@ const styles = {
   },
 
   success: {
-    color: "#34d399",
+    color: "#141917",
     marginBottom: 10,
     fontSize: 13,
   },
