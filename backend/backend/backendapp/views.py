@@ -622,7 +622,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Attendance.objects.filter(student__user=self)
-<<<<<<< Updated upstream
+
 
     def perform_create(self, serializer):
         student = Student.objects.get(user=self.request.user)
