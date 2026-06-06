@@ -45,12 +45,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://esther-api.tagooledavid.com",
     "http://localhost:5173",
     "http://127.0.0.:5173",
+    "https://internship-project-6to.pages.dev"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://esther-api.tagooledavid.com",
     "http://localhost:5173",
     "http://127.0.0.:5173",
+    "https://internship-project-6to.pages.dev"
 ]
 
 
