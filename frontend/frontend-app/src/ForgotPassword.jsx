@@ -129,7 +129,7 @@ const styles = {
   subtitle: {
     color: "rgba(255,255,255,0.6)",
     fontSize: 14,
-    marginBottom: 20,
+    marginBottom: 24,
   },
 
   input: {
