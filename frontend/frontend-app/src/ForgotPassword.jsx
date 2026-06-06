@@ -148,7 +148,7 @@ const styles = {
     border: "none",
     background: "#2563eb",
     color: "white",
-    fontWeight: 400,
+    fontWeight: 500,
   },
 
   footer: {
@@ -158,7 +158,7 @@ const styles = {
   },
 
   link: {
-    color: "#4825b0",
+    color: "#a78bfa",
     cursor: "pointer",
     textDecoration: "underline",
   },
