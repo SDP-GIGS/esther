@@ -147,7 +147,7 @@ const styles = {
     borderRadius: 6,
     border: "none",
     background: "#2563eb",
-    color: "yellow",
+    color: "white",
     fontWeight: 600,
   },
 
