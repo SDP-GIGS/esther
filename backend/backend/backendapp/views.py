@@ -615,6 +615,7 @@ class FeedbackViewSet(viewsets.ModelViewSet):
 class SupervisorViewSet(viewsets.ModelViewSet):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer
+    permission_classes = [IsAuthenticated] 
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
