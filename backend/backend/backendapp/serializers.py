@@ -137,4 +137,7 @@ class GoalFeedbackSerializer(serializers.ModelSerializer):
             'created_at'
         ]
 
-        
+        read_only_fields =[
+            'supervisor',
+            'created_at'
+        ]
