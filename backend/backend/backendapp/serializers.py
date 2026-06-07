@@ -12,6 +12,10 @@ class UserSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='user.get_full_name', read_only=True)
 
+    def get_full_name(self, obj):
+        full = obj.user.get_full_name()
+        return full if full.strip() else obj.user.username
+
     class Meta:
         model = Student
         fields = '__all__'
@@ -32,6 +36,10 @@ class StudentSerializer(serializers.ModelSerializer):
 class SupervisorSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='user.get_full_name', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
+
+    def get_full_name(self, obj):
+        full = obj.user.get_full_name()
+        return full if full.strip() else obj.user.username
 
     class Meta:
         model = Supervisor
@@ -137,7 +145,7 @@ class GoalFeedbackSerializer(serializers.ModelSerializer):
             'created_at'
         ]
 
-        read_only_fields = [
+        read_only_fields =[
             'supervisor',
             'created_at'
         ]
