@@ -1,0 +1,130 @@
+body{
+    margin: 0;
+    background-color: #41468f;
+    height: 100vh;
+    animation: bgShift 7s infinite alternate;
+}
+@keyframes bgShift {
+    0% {
+        background-color: #1d2761;
+    }
+    25% {
+         background-color: #09113b;
+    }
+    50% {
+         background-color: #040a2c;}
+    100%{
+         background-color: #030b29;}}
+
+.contact-info a{
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer
+}
+
+.contact-info a:hover{
+    text-decoration: underline;
+}
+
+.phone{
+
+color: #ffffff;
+cursor: pointer;
+}
+
+.phone:hover{
+    text-decoration: underline;
+}
+
+.login-page {
+height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+color: rgb(255, 255, 255);
+}
+
+.welcome-text{
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.welcome-text h1{
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.login-box label{
+    display: block;
+    text-align: left;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+.login-box input:not([type="checkbox"]){
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-buttons button {
+    background-color: rgb(14, 25, 107);
+    width: 33.3%;
+    margin: 6px 0;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+    border-radius: 4px;
+    cursor: pointer;
+    height: 45px;         
+    display: inline-flex;  
+    align-items: center;   
+    justify-content: center;
+}
+
+.login-buttons button:hover{
+    background: #000000;
+}
+.login-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.extra-links {
+    margin-top: 1rem;
+
+}
+
+.extra-links a {
+color: #5649e1;
+text-decoration: none;
+}
+
+.extra-links a:hover {
+
+    text-decoration: underline;
+}
+
+.contact-info{
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+.create-account-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.role-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}

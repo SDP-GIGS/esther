@@ -55,10 +55,7 @@ class Report(models.Model):
     submission_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.student} - Week {self.week_number} ({self.status})"
-
-
-
+        return f"{self.student}- ({self.status})"
 
 class Feedback(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
