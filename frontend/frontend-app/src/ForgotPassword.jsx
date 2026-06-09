@@ -171,7 +171,7 @@ const styles = {
 
   success: {
     color: "#34d399",
-    marginBottom: 10,
+    marginBottom: 12,
     fontSize: 13,
   },
 };
