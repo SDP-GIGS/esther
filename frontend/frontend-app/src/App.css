@@ -3,6 +3,7 @@ body{
     background-color: #41468f;
     height: 100vh;
     animation: bgShift 7s infinite alternate;
+    color: #ffffff;
 }
 @keyframes bgShift {
     0% {
