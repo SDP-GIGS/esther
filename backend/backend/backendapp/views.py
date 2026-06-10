@@ -450,6 +450,7 @@ class RegisterView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         role = request.data.get("role")
+        year_of_study = request.data.get("year_of_study")
 
         if not username or not password or not role:
             return Response({"error": "All fields required"}, status=400)
@@ -472,7 +473,8 @@ class RegisterView(APIView):
         # Automatically create related profile
         if role == "student":
             Student.objects.create(
-            user=user
+                user=user,
+                year_of_study=year_of_study
         )
 
         elif role in ["academic", "workplace"]:
@@ -615,14 +617,13 @@ class FeedbackViewSet(viewsets.ModelViewSet):
 class SupervisorViewSet(viewsets.ModelViewSet):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer
-
+    permission_classes = [IsAuthenticated]      
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Attendance.objects.filter(student__user=self)
-<<<<<<< Updated upstream
 
     def perform_create(self, serializer):
         student = Student.objects.get(user=self.request.user)
@@ -675,8 +676,6 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         return Attendance.objects.filter(student__user=self.request.user)
-=======
->>>>>>> Stashed changes
 
     def perform_create(self, serializer):
         student = Student.objects.get(user=self.request.user)
@@ -767,7 +766,6 @@ def assign_goal_to_student(request, pk):
     goal.save()
 
     return Response({"message": "Goal assigned to student"})
-<<<<<<< Updated upstream
 
 #@api_view(['POST'])
 #def send_otp(request):
@@ -808,8 +806,6 @@ def assign_goal_to_student(request, pk):
 @api_view(['POST'])
 def send_otp(request):
     email = request.data.get('email')
-=======
->>>>>>> Stashed changes
 
 #@api_view(['POST'])
 #def send_otp(request):
@@ -839,14 +835,4 @@ def send_otp(request):
     # if not otp_obj:
     #     return Response({"error": "Invalid OTP"}, status=400)
 
-<<<<<<< Updated upstream
     return Response({"message": "Account verified"})
-=======
-    # user.is_verified = True
-    # user.save()
-
-    # otp_obj.is_used = True
-    # otp_obj.save()
-
-    # return Response({"message": "Account verified"})
->>>>>>> Stashed changes

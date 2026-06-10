@@ -29,10 +29,15 @@ SECRET_KEY = 'django-insecure-garo(!gl6&(!ak!pmg7irncg&kua-)6yg_ka%%%+4jw^6=7rmu
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "esther-api.tagooledavid.com",
+]
+
 CORS_ALLOWED_ORIGINS = [
     "https://esther-api.tagooledavid.com",
     "http://localhost:5173",
-    "http://127.0.0.:5173",
+    "http://127.0.0.1:5173",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -40,7 +45,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
 ]
-]
+
 
 
 # Application definition
