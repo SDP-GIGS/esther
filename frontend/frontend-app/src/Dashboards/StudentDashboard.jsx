@@ -296,7 +296,7 @@ const name =
           <div style={s.section}>
             <h2 style={s.sectionTitle}>Goals from Supervisor</h2>
             <div style={s.goalBox}>
-              <p style={{ color: "#aaa" }}>Goals sent by your supervisor will appear here.</p>
+              <p style={{ color: "#ffffff" }}>Goals sent by your supervisor will appear here.</p>
             </div>
             {goalsMsg && <div style={s.successBox}>{goalsMsg}</div>}
            <h2
@@ -320,7 +320,7 @@ const name =
         {activeTab === "proof" && (
           <div style={s.section}>
             <h2 style={s.sectionTitle}>Upload Proof of Work</h2>
-            <p style={{ color: "#aaa", marginBottom: "16px" }}>
+            <p style={{ color: "#f7f4f4", marginBottom: "16px" }}>
               Upload a document or image. It will be sent to your email as a record.
             </p>
             <input

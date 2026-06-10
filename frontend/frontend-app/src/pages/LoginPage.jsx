@@ -137,11 +137,13 @@ function LoginPage() {
     <div className="login-page">
 
       <div className="welcome-text">
-        <h1 style={{ color: "#ffffff" }}>Welcome to</h1>
-        <h1 style={{ color: "#ffffff" }}>ILES</h1>
-    </div>
+        <h1>Welcome to</h1>
+        <h1>ILES</h1>
+      </div>
+
       <div className="login-box">
-         <h2 style={{ color: "#ffffff" }}>Login</h2>
+
+        <h2>Login</h2>
 
         {errors.general && (
           <p
