@@ -226,7 +226,14 @@ const name =
         {/* DAILY LOG */}
         {activeTab === "log" && (
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Daily Activity Log</h2>
+          <h2
+  style={{
+    ...s.sectionTitle,
+    color: "#FFFDD0", 
+  }}
+>
+  Daily Activity Log
+</h2>
             {logMsg && <div style={s.successBox}>{logMsg}</div>}
             <label style={s.label}>Hours Worked</label>
             <input
