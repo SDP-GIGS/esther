@@ -257,7 +257,14 @@ const name =
         {/* WEEKLY REPORT */}
         {activeTab === "report" && (
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Submit Weekly Report</h2>
+           <h2
+  style={{
+    ...s.sectionTitle,
+    color: "#ffffff",
+  }}
+>
+  Submit Weekly Report
+</h2>
             {reportMsg && <div style={s.successBox}>{reportMsg}</div>}
             <label style={s.label}>Week Number</label>
             <input
