@@ -2,8 +2,7 @@ body{
     margin: 0;
     background-color: #41468f;
     height: 100vh;
-    animation: bgShift 7s infinite alternate;
-    color: #ffffff;
+    animation: bgShift 7s infinite alternate;;
 }
 @keyframes bgShift {
     0% {
@@ -57,14 +56,16 @@ color: rgb(255, 255, 255);
     font-size: 3rem;
     font-weight: bold;
     letter-spacing: 1px;
+    color:#ffffff
 }
 
 .login-box label{
     display: block;
     text-align: left;
     margin-top: 10px;
-    font-size: 2.8rem;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color:#ffffff
 }
 .login-box input:not([type="checkbox"]){
     width: 100%;
@@ -73,6 +74,7 @@ color: rgb(255, 255, 255);
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    color:#ffffff
 }
 
 .login-buttons button {
