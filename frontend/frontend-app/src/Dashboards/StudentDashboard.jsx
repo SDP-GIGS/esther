@@ -191,7 +191,14 @@ const name =
         {/* CHECK IN / OUT */}
         {activeTab === "checkin" && (
           <div style={s.section}>
-            <h2 style={s.sectionTitle}>Digital Check In / Out</h2>
+           <h2
+  style={{
+    ...s.sectionTitle,
+    color: "#FFFDD0",
+  }}
+>
+  Digital Check In / Out
+</h2>
             {checkStatus && (
               <div style={s.successBox}>
                 Checked {checkStatus} at {checkTime}
