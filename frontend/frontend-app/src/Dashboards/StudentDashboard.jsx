@@ -300,7 +300,14 @@ const name =
               <p style={{ color: "#aaa" }}>Goals sent by your supervisor will appear here.</p>
             </div>
             {goalsMsg && <div style={s.successBox}>{goalsMsg}</div>}
-            <label style={s.label}>Your Feedback on Goals</label>
+           <h2
+  style={{
+    ...s.sectionTitle,
+    color: "#ffffff",
+  }}
+>
+  Upload Proof of Work
+</h2>
             <textarea
               placeholder="Are the goals met? Share your feedback with your supervisor..."
               value={goalFeedback}
