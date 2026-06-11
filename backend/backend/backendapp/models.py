@@ -65,7 +65,8 @@ class Feedback(models.Model):
     date_given = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Feedback by {self.supervisor}"
+        return f"Feedback by {self.supervisor} on {self.report}"
+        
 
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

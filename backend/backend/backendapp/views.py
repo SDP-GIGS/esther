@@ -301,7 +301,7 @@ def update_profile(request):
 #@api_view(['POST'])
 #def send_otp(request):
 
-    # email = request.data.get('email')
+    email = request.data.get('email')
 
     # if not email:
 
@@ -335,8 +335,8 @@ def update_profile(request):
     #     fail_silently=False,
     # )
 
-    return Response({
-        "message": "OTP sent successfully"
+    #return Response({
+     #   "message": "OTP sent successfully"
     })
 #@api_view(['POST'])
 #def verify_otp(request):
@@ -386,8 +386,8 @@ def update_profile(request):
 
     # otp.save()
 
-    return Response({
-        "message": "OTP verified successfully"
+   # return Response({
+    #    "message": "OTP verified successfully"
     })
 #@api_view(['POST'])
 #def forgot_password(request):
@@ -450,6 +450,7 @@ class RegisterView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         role = request.data.get("role")
+        year_of_study = request.data.get("year_of_study")
 
         if not username or not password or not role:
             return Response({"error": "All fields required"}, status=400)
@@ -472,7 +473,8 @@ class RegisterView(APIView):
         # Automatically create related profile
         if role == "student":
             Student.objects.create(
-            user=user
+                user=user,
+                year_of_study=year_of_study
         )
 
         elif role in ["academic", "workplace"]:
@@ -615,8 +617,9 @@ class FeedbackViewSet(viewsets.ModelViewSet):
 class SupervisorViewSet(viewsets.ModelViewSet):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer
-    permission_classes = [IsAuthenticated] 
 
+    permission_classes = [IsAuthenticated] 
+     
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
