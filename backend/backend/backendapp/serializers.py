@@ -106,12 +106,12 @@ class GoalSerializer(serializers.ModelSerializer):
             'created_by',
             'created_by_name',
             'status',
-            'created_at'
+            'date_created'
         ]
 
         read_only_fields = [
             'created_by',
-            'created_at'
+            'date_created'
         ]
 
 class ProofOfWorkSerializer(serializers.ModelSerializer):
