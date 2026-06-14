@@ -90,7 +90,7 @@ class DailyLog(models.Model):
                 name='unique_daily_log_per_student_per_day'
             )
         ]
-
+    def __str__(self):
 
 class Goal(models.Model):
     GOAL_TYPE = (
