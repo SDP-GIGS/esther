@@ -13,7 +13,6 @@ class User(AbstractUser):
     #is_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.username} ({self.role})"
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
