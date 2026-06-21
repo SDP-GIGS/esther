@@ -335,9 +335,9 @@ def update_profile(request):
     #     fail_silently=False,
     # )
 
-    return Response({
-        "message": "OTP sent successfully"
-    })
+    #return Response({
+     #   "message": "OTP sent successfully"
+    #   })
 #@api_view(['POST'])
 #def verify_otp(request):
 
@@ -386,9 +386,9 @@ def update_profile(request):
 
     # otp.save()
 
-    return Response({
-        "message": "OTP verified successfully"
-    })
+    #return Response({
+     #   "message": "OTP verified successfully"
+    #})
 #@api_view(['POST'])
 #def forgot_password(request):
 
@@ -439,9 +439,9 @@ def update_profile(request):
 
     # user.save()
 
-    return Response({
-        "message": "Password reset successful"
-    })
+    #return Response({
+     #   "message": "Password reset successful"
+    #})
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -835,4 +835,4 @@ def send_otp(request):
     # if not otp_obj:
     #     return Response({"error": "Invalid OTP"}, status=400)
 
-    return Response({"message": "Account verified"})
+    #return Response({"message": "Account verified"})
